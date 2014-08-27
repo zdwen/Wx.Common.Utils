@@ -52,15 +52,8 @@ namespace Wx.Utils.SqlServer
         /// 【闻祖东 2012-1-31-154314】Input参数字典
         /// </summary>
         public Dictionary<string, SqlParameter> DicInputParams { get; protected set; }
-
-        /// <summary>
-        /// 【闻祖东 2012-2-2-170521】Return参数字典
-        /// </summary>
-        public ReturnValueEntityCollection ReturnParams { get; private set; }
-        /// <summary>
-        /// 【闻祖东 2012-2-19-110211】Output参数字典
-        /// </summary>
-        public ReturnValueEntityCollection OutputParams { get; private set; }
+        public Dictionary<string, SqlParameter> ReturnParams { get; private set; }
+        public Dictionary<string, SqlParameter> OutputParams { get; private set; }
 
         protected QueryObject()
         {
@@ -68,8 +61,8 @@ namespace Wx.Utils.SqlServer
             CmdTimeOut = 30;
             CmdText = string.Empty;
             DicInputParams = new Dictionary<string, SqlParameter>();
-            ReturnParams = new ReturnValueEntityCollection();
-            OutputParams = new ReturnValueEntityCollection();
+            OutputParams = new Dictionary<string, SqlParameter>();
+            ReturnParams = new Dictionary<string, SqlParameter>();
         }
 
         /// <summary>
@@ -180,6 +173,7 @@ namespace Wx.Utils.SqlServer
 
             SqlParameter param = new SqlParameter()
             {
+                Direction = ParameterDirection.Input,
                 ParameterName = paramName,
                 SqlValue = (paramValue != null && paramValue.GetType().IsEnum)
                     ? paramValue.ToString()
@@ -194,6 +188,7 @@ namespace Wx.Utils.SqlServer
             SqlParameter param = new SqlParameter()
             {
                 ParameterName = paramName,
+                Direction = ParameterDirection.Input,
                 SqlDbType = dbType,
                 SqlValue = paramValue == null
                             ? DBNull.Value
@@ -205,23 +200,42 @@ namespace Wx.Utils.SqlServer
             DicInputParams[paramName] = param;
         }
 
-        /// <summary>
-        /// 【闻祖东 2012-2-2-163222】添加返回参数（ParameterDirection.ReturnValue）
-        /// </summary>
-        /// <param name="paramName">参数名</param>
-        public void AddReturnParam(string paramName, DbType dbType, int size)
+        public void AddReturnParamNew(string paramName, SqlDbType dbType, int size)
         {
-            ReturnParams.Add(new ReturnValueEntity() { Name = paramName, DbType = dbType, Size = size });
+            SqlParameter param = new SqlParameter()
+            {
+                ParameterName = paramName,
+                Direction = ParameterDirection.ReturnValue,
+                SqlDbType = dbType,
+                Size = size,
+            };
+
+            ReturnParams[paramName] = param;
         }
 
-        public void AddOutputParam(string paramName, DbType dbType, int size)
+        public void AddOutputParam(string paramName, SqlDbType dbType, int size)
         {
-            OutputParams.Add(new ReturnValueEntity() { Name = paramName, DbType = dbType, Size = size });
+            SqlParameter param = new SqlParameter()
+            {
+                ParameterName = paramName,
+                Direction = ParameterDirection.Output,
+                SqlDbType = dbType,
+                Size = size,
+            };
+
+            OutputParams[paramName] = param;
         }
 
-        public void AddOutputParam(string paramName, DbType dbType)
+        public void AddOutputParam(string paramName, SqlDbType dbType)
         {
-            OutputParams.Add(new ReturnValueEntity() { Name = paramName, DbType = dbType });
+            SqlParameter param = new SqlParameter()
+            {
+                ParameterName = paramName,
+                Direction = ParameterDirection.Output,
+                SqlDbType = dbType,
+            };
+
+            OutputParams[paramName] = param;
         }
 
         public DbManager CreateDbManager4Crc(string connectionStringNode)
@@ -305,8 +319,8 @@ namespace Wx.Utils.SqlServer
 
         void Evaluate4ReturnOrOutValue(DbManager dbAssigned)
         {
-            ReturnParams.ForEach(rtnValue => rtnValue.Value = dbAssigned.Parameter(rtnValue.Name).Value);
-            OutputParams.ForEach(otpValue => otpValue.Value = dbAssigned.Parameter(otpValue.Name).Value);
+            ReturnParams.Values.ToList().ForEach(param => param.SqlValue = dbAssigned.Parameter(param.ParameterName).Value);
+            OutputParams.Values.ToList().ForEach(param => param.SqlValue = dbAssigned.Parameter(param.ParameterName).Value);
         }
     }
 }

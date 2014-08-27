@@ -14,8 +14,8 @@ namespace Wx.Utils.SqlServer.Extentions
             List<IDbDataParameter> list = new List<IDbDataParameter>();
 
             list.AddRange(queryObject.DicInputParams.Values);
-            queryObject.ReturnParams.ForEach(rtnValue => list.Add(dbManager.Parameter(ParameterDirection.ReturnValue, rtnValue.Name, rtnValue.DbType, rtnValue.Size)));
-            queryObject.OutputParams.ForEach(otpValue => list.Add(dbManager.Parameter(ParameterDirection.Output, otpValue.Name, otpValue.DbType, otpValue.Size)));
+            list.AddRange(queryObject.ReturnParams.Values);
+            list.AddRange(queryObject.OutputParams.Values);
 
             return dbManager.SetCommand(queryObject.CommandType, queryObject.CmdText, list.ToArray());
         }
