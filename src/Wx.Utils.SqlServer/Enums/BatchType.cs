@@ -11,7 +11,7 @@ namespace Wx.Utils.SqlServer.Enums
     public enum BatchType
     {
         /// <summary>
-        /// 【闻祖东 2014-8-27-161059】单例执行
+        /// 【闻祖东 2014-8-27-161059】单线程执行
         /// </summary>
         SingleThread = 0,
         /// <summary>

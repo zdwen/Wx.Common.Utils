@@ -46,6 +46,7 @@
   <ItemGroup>
     <Compile Include="Extentions\ExList.cs" />
     <Compile Include="JsonHelper.cs" />
+    <Compile Include="Modles\Entities\BOs\Crypter.cs" />
     <Compile Include="Modles\Entities\BOs\WxJsonConverter\EnumJsonConverter.cs" />
     <Compile Include="Modles\Entities\DTOs\DevidedList.cs" />
     <Compile Include="WxUtils.cs" />
@@ -54,6 +55,7 @@
     <Compile Include="Modles\Entities\BOs\MultiTasks\WxTask.cs" />
     <Compile Include="Modles\Entities\BOs\MultiTasks\WxTaskCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="XmlHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Modles\Enums\" />

@@ -7,7 +7,6 @@ using System.Threading;
 using System.Data.SqlClient;
 using System.Data;
 using Wx.Common.Utils.Extentions;
-using Wx.Utils.SqlServer.Extentions;
 using Wx.Utils.SqlServer.Enums;
 using Wx.Common.Utils;
 using Wx.Common.Utils.Modles.Entities.BOs.MultiTasks;

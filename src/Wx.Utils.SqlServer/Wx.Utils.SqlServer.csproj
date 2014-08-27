@@ -43,10 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\ReturnValueEntity.cs" />
-    <Compile Include="Entities\ReturnValueEntityCollection.cs" />
     <Compile Include="Enums\BatchType.cs" />
-    <Compile Include="Extentions\ExDbManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueryObject.cs" />
     <Compile Include="QueryObjectCollection.cs" />

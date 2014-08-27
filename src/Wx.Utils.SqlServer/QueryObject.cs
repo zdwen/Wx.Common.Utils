@@ -5,8 +5,6 @@ using System.Text;
 using BLToolkit.Data;
 using System.Data;
 using System.Data.SqlClient;
-using Wx.Utils.SqlServer.Extentions;
-using Wx.Utils.SqlServer.Entities;
 
 namespace Wx.Utils.SqlServer
 {
@@ -31,6 +29,10 @@ namespace Wx.Utils.SqlServer
         /// 主要是近期风控检测线上环境频繁的插入操作超时。
         /// </summary>
         public int CmdTimeOut { get; set; }
+        /// <summary>
+        /// 【闻祖东 2014-8-27-182145】标识当传入的参数为枚举类型的时候，是否将其处理为对应的字符串，否则处理为其对应的int值。
+        /// </summary>
+        public bool EnumAsString { get; set; }
 
         CommandType _commandType;
         /// <summary>
@@ -51,15 +53,16 @@ namespace Wx.Utils.SqlServer
         /// <summary>
         /// 【闻祖东 2012-1-31-154314】Input参数字典
         /// </summary>
-        public Dictionary<string, SqlParameter> DicInputParams { get; protected set; }
-        public Dictionary<string, SqlParameter> ReturnParams { get; private set; }
-        public Dictionary<string, SqlParameter> OutputParams { get; private set; }
+        internal Dictionary<string, SqlParameter> DicInputParams { get; set; }
+        internal Dictionary<string, SqlParameter> ReturnParams { get; set; }
+        internal Dictionary<string, SqlParameter> OutputParams { get; set; }
 
         protected QueryObject()
         {
             CommandType = CommandType.Text;
             CmdTimeOut = 30;
             CmdText = string.Empty;
+            EnumAsString = true;
             DicInputParams = new Dictionary<string, SqlParameter>();
             OutputParams = new Dictionary<string, SqlParameter>();
             ReturnParams = new Dictionary<string, SqlParameter>();
@@ -154,48 +157,25 @@ namespace Wx.Utils.SqlServer
         /// <summary>
         /// 【闻祖东 2012-2-2-163120】默认的添加参数的方法，添加输入参数（InputParam）
         /// 【闻祖东 2012-3-26-151950】默认情况下，枚举会被转换成相应的名称字符串（注）。
+        /// 此方法引起的参数类型转换造成数据库的性能问题，此方法强制建议采用AddParam(string paramName, object paramValue, SqlDbType dbType)来替代。"
         /// </summary>
         /// <param name="paramName">参数名</param>
         /// <param name="paramValue">参数值</param>
-        [Obsolete("【闻祖东 2013-11-13-174251】此方法引起的参数类型转换造成数据库的性能问题，此方法强制建议采用AddParam(string paramName, object paramValue, SqlDbType dbType)来替代。")]
-        public void AddParam(string paramName, object paramValue)
-        {
-            ///【闻祖东 2012-2-19-115605】在CRC里面凡是程序里面的枚举值，存储到数据库默认全部都是存储的其字符串的值，
-            ///这算是CRC的一个硬性规范。
-            //if (paramValue != null && paramValue.GetType().IsEnum)
-            //    DicInputParams.Add(paramName, paramValue.ToString());
-            //else
-            //    DicInputParams.Add(paramName, paramValue);
-
-            /*DicInputParams[paramName] = (paramValue != null && paramValue.GetType().IsEnum)
-                ? paramValue.ToString()
-                : paramValue;*/
-
-            SqlParameter param = new SqlParameter()
-            {
-                Direction = ParameterDirection.Input,
-                ParameterName = paramName,
-                SqlValue = (paramValue != null && paramValue.GetType().IsEnum)
-                    ? paramValue.ToString()
-                    : paramValue,
-            };
-
-            DicInputParams[paramName] = param;
-        }
-
-        public void AddParam(string paramName, object paramValue, SqlDbType dbType)
+        public void AddParam(string paramName, object paramValue, SqlDbType? dbType = null)
         {
             SqlParameter param = new SqlParameter()
             {
                 ParameterName = paramName,
                 Direction = ParameterDirection.Input,
-                SqlDbType = dbType,
                 SqlValue = paramValue == null
-                            ? DBNull.Value
-                            : paramValue.GetType().IsEnum
-                                    ? paramValue.ToString()
-                                    : paramValue,
+                    ? DBNull.Value
+                    : EnumAsString && paramValue.GetType().IsEnum
+                        ? paramValue.ToString()
+                        : paramValue,
             };
+
+            if (dbType.HasValue)
+                param.SqlDbType = dbType.Value;
 
             DicInputParams[paramName] = param;
         }
@@ -238,20 +218,25 @@ namespace Wx.Utils.SqlServer
             OutputParams[paramName] = param;
         }
 
-        public DbManager CreateDbManager4Crc(string connectionStringNode)
+        public DbManager CreateDbManager(string connectionStringNode)
         {
             DbManager dbManager = new DbManager(connectionStringNode);
             dbManager.Command.CommandTimeout = CmdTimeOut;
-            return dbManager;
+            List<IDbDataParameter> list = new List<IDbDataParameter>();
+
+            list.AddRange(DicInputParams.Values);
+            list.AddRange(ReturnParams.Values);
+            list.AddRange(OutputParams.Values);
+
+            return dbManager.SetCommand(CommandType, CmdText, list.ToArray());
         }
 
         public DataTable xExecuteDataTable()
         {
-            using (DbManager dbManager = CreateDbManager4Crc(ConnectionStringNode))
+            using (DbManager dbManager = CreateDbManager(ConnectionStringNode))
             {
-                DbManager dbAssigned = dbManager.xSetCommand(this);
-                DataTable dtResult = dbAssigned.ExecuteDataTable();
-                Evaluate4ReturnOrOutValue(dbAssigned);
+                DataTable dtResult = dbManager.ExecuteDataTable();
+                Evaluate4ReturnOrOutValue(dbManager);
 
                 return dtResult;
             }
@@ -259,11 +244,10 @@ namespace Wx.Utils.SqlServer
 
         public DataSet xExecuteDataSet()
         {
-            using (DbManager dbManager = CreateDbManager4Crc(ConnectionStringNode))
+            using (DbManager dbManager = CreateDbManager(ConnectionStringNode))
             {
-                DbManager dbAssigned = dbManager.xSetCommand(this);
-                DataSet dsResult = dbAssigned.ExecuteDataSet();
-                Evaluate4ReturnOrOutValue(dbAssigned);
+                DataSet dsResult = dbManager.ExecuteDataSet();
+                Evaluate4ReturnOrOutValue(dbManager);
 
                 return dsResult;
             }
@@ -271,11 +255,10 @@ namespace Wx.Utils.SqlServer
 
         public int xExecuteNonQuery()
         {
-            using (DbManager dbManager = CreateDbManager4Crc(ConnectionStringNode))
+            using (DbManager dbManager = CreateDbManager(ConnectionStringNode))
             {
-                DbManager dbAssigned = dbManager.xSetCommand(this);
-                int iEffect = dbAssigned.ExecuteNonQuery();
-                Evaluate4ReturnOrOutValue(dbAssigned);
+                int iEffect = dbManager.ExecuteNonQuery();
+                Evaluate4ReturnOrOutValue(dbManager);
 
                 return iEffect;
             }
@@ -283,11 +266,10 @@ namespace Wx.Utils.SqlServer
 
         public List<T> xExecuteList<T>()
         {
-            using (DbManager dbManager = CreateDbManager4Crc(ConnectionStringNode))
+            using (DbManager dbManager = CreateDbManager(ConnectionStringNode))
             {
-                DbManager dbAssigned = dbManager.xSetCommand(this);
-                List<T> listResult = dbAssigned.ExecuteList<T>();
-                Evaluate4ReturnOrOutValue(dbAssigned);
+                List<T> listResult = dbManager.ExecuteList<T>();
+                Evaluate4ReturnOrOutValue(dbManager);
 
                 return listResult;
             }
@@ -295,11 +277,10 @@ namespace Wx.Utils.SqlServer
 
         public T xExecuteObject<T>()
         {
-            using (DbManager dbManager = CreateDbManager4Crc(ConnectionStringNode))
+            using (DbManager dbManager = CreateDbManager(ConnectionStringNode))
             {
-                DbManager dbAssigned = dbManager.xSetCommand(this);
-                T tResult = dbAssigned.ExecuteObject<T>();
-                Evaluate4ReturnOrOutValue(dbAssigned);
+                T tResult = dbManager.ExecuteObject<T>();
+                Evaluate4ReturnOrOutValue(dbManager);
 
                 return tResult;
             }
@@ -307,11 +288,10 @@ namespace Wx.Utils.SqlServer
 
         public T xExecuteScalar<T>()
         {
-            using (DbManager dbManager = CreateDbManager4Crc(ConnectionStringNode))
+            using (DbManager dbManager = CreateDbManager(ConnectionStringNode))
             {
-                DbManager dbAssigned = dbManager.xSetCommand(this);
-                T tResult = dbAssigned.ExecuteScalar<T>();
-                Evaluate4ReturnOrOutValue(dbAssigned);
+                T tResult = dbManager.ExecuteScalar<T>();
+                Evaluate4ReturnOrOutValue(dbManager);
 
                 return tResult;
             }
