@@ -8,15 +8,15 @@ namespace Wx.Utils.SqlServer.Enums
     /// <summary>
     /// 【闻祖东 2013-3-4-185323】用于标识QueryObjectCollection对象的批量执行命令的执行方式。
     /// </summary>
-    public enum QoCollBatchType
+    public enum BatchType
     {
         /// <summary>
-        /// 【闻祖东 2013-3-4-185350】同步执行
+        /// 【闻祖东 2014-8-27-161059】单例执行
         /// </summary>
-        Sync = 0,
+        SingleThread = 0,
         /// <summary>
-        /// 【闻祖东 2013-3-4-185401】异步执行
+        /// 【闻祖东 2014-8-27-161110】多线程执行
         /// </summary>
-        ASync,
+        MultiThread,
     }
 }
