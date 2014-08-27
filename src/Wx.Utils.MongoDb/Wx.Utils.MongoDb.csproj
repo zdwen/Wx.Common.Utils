@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2B9F4ECD-AA88-460F-B7BC-3C7C85506CB6}</ProjectGuid>
+    <ProjectGuid>{EA1E68A3-B23A-4E5A-BC8E-5736D9F7DD1B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Wx.Common.Utils</RootNamespace>
-    <AssemblyName>Wx.Common.Utils</AssemblyName>
+    <RootNamespace>Wx.Utils.MongoDb</RootNamespace>
+    <AssemblyName>Wx.Utils.MongoDb</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,9 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\lib\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="MongoDB.Bson">
+      <HintPath>..\..\lib\MongoDB.Bson.dll</HintPath>
+    </Reference>
+    <Reference Include="MongoDB.Driver">
+      <HintPath>..\..\lib\MongoDB.Driver.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,19 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extentions\ExList.cs" />
-    <Compile Include="JsonHelper.cs" />
-    <Compile Include="Modles\Entities\BOs\WxJsonConverter\EnumJsonConverter.cs" />
-    <Compile Include="Modles\Entities\DTOs\DevidedList.cs" />
-    <Compile Include="WxUtils.cs" />
-    <Compile Include="Modles\Entities\BOs\MultiTasks\WxAction.cs" />
-    <Compile Include="Modles\Entities\BOs\MultiTasks\WxFunc.cs" />
-    <Compile Include="Modles\Entities\BOs\MultiTasks\WxTask.cs" />
-    <Compile Include="Modles\Entities\BOs\MultiTasks\WxTaskCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Modles\Enums\" />
+    <Compile Include="QueryObjectMgDb.cs" />
+    <Compile Include="QueryResult.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
