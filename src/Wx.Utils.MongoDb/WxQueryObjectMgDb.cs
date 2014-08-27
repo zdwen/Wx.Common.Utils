@@ -8,7 +8,7 @@ using MongoDB.Driver.Builders;
 
 namespace Wx.Utils.MongoDb
 {
-    public abstract class QueryObjectMgDb
+    public abstract class WxQueryObjectMgDb
     {
         const int DefaultLimit = -1;
         const int DefaultSkip = 0;
@@ -19,11 +19,11 @@ namespace Wx.Utils.MongoDb
 
         static readonly Dictionary<bool, WriteConcern> DicWriteConcern = new Dictionary<bool, WriteConcern>()
         {
-            { true, WriteConcern.Acknowledged }, ///【闻祖东 2013-12-27-110015】其实是W1
-            { false, WriteConcern.Unacknowledged }, ///【闻祖东 2013-12-27-110025】其实是W0
+            { true, WriteConcern.Acknowledged }, ///【zdwen 2013-12-27-110015】其实是W1
+            { false, WriteConcern.Unacknowledged }, ///【zdwen 2013-12-27-110025】其实是W0
         };
 
-        public QueryObjectMgDb()
+        public WxQueryObjectMgDb()
         {
             CollectionName = string.Empty;
             _query = Query.Null;
@@ -46,12 +46,12 @@ namespace Wx.Utils.MongoDb
                 : Query.And(_query, mgQuery);
         }
 
-        public QueryResult<BsonDocument> GetBsonDocs()
+        public WxQueryResult<BsonDocument> GetBsonDocs()
         {
             return GetBsonDocs<BsonDocument>();
         }
 
-        public QueryResult<T> GetBsonDocs<T>()
+        public WxQueryResult<T> GetBsonDocs<T>()
         {
             using (InitConnection())
             {
@@ -73,7 +73,7 @@ namespace Wx.Utils.MongoDb
                 if (Skip != DefaultSkip)
                     cursors.Skip = Skip;
 
-                return new QueryResult<T>()
+                return new WxQueryResult<T>()
                 {
                     DocsMatchedSum = (int)cursors.Count(),
                     DataReturned = cursors.ToList(),
@@ -129,7 +129,7 @@ namespace Wx.Utils.MongoDb
         {
             MongoUrl url = new MongoUrlBuilder(DbConnStr).ToMongoUrl();
             _dbServer = new MongoClient(url).GetServer();
-            ////dbServer = MongoServer.Create(url); ///【闻祖东 2013-12-30-180301】还是用这个方法，默认的WriteConcern=Unacknowledged
+            ////dbServer = MongoServer.Create(url); ///【zdwen 2013-12-30-180301】还是用这个方法，默认的WriteConcern=Unacknowledged
             _db = _dbServer.GetDatabase(url.DatabaseName);
 
             return _dbServer.RequestStart(_db);

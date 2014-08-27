@@ -9,7 +9,7 @@ using System.IO.Compression;
 
 namespace Wx.Common.Utils
 {
-    public static class XmlHelper
+    public static class WxXml
     {
         public static string XmlSerialize(Encoding encoding, object obj)
         {

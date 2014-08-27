@@ -9,34 +9,34 @@ using System.Data.SqlClient;
 namespace Wx.Utils.SqlServer
 {
     /// <summary>
-    /// 【闻祖东 2011-12-28-175344】CRC内部自定义的SQL命令执行对象
+    /// 【zdwen 2011-12-28-175344】CRC内部自定义的SQL命令执行对象
     /// 目的在于使与数据库打交道的业务中只关心必要的查询语句以及参数，
     /// 而不去关于创建连接以及释放资源等等，减少重复代码。
     /// </summary>
-    public abstract class QueryObject
+    public abstract class WxQueryObject
     {
         /// <summary>
-        /// 【闻祖东 2012-1-31-154326】配置文件中的指向数据库连接字符串的节点
+        /// 【zdwen 2012-1-31-154326】配置文件中的指向数据库连接字符串的节点
         /// </summary>
         public abstract string ConnectionStringNode { get; }
 
         /// <summary>
-        /// 【闻祖东 2011-12-27-150501】等待执行的带参数的SQL语句或存储过程名称
+        /// 【zdwen 2011-12-27-150501】等待执行的带参数的SQL语句或存储过程名称
         /// </summary>
         public string CmdText { get; set; }
         /// <summary>
-        /// 【闻祖东 2013-2-4-111959】新加入的重要元素，执行的超时时间。
+        /// 【zdwen 2013-2-4-111959】新加入的重要元素，执行的超时时间。
         /// 主要是近期风控检测线上环境频繁的插入操作超时。
         /// </summary>
         public int CmdTimeOut { get; set; }
         /// <summary>
-        /// 【闻祖东 2014-8-27-182145】标识当传入的参数为枚举类型的时候，是否将其处理为对应的字符串，否则处理为其对应的int值。
+        /// 【zdwen 2014-8-27-182145】标识当传入的参数为枚举类型的时候，是否将其处理为对应的字符串，否则处理为其对应的int值。
         /// </summary>
         public bool EnumAsString { get; set; }
 
         CommandType _commandType;
         /// <summary>
-        /// 【闻祖东 2011-12-28-171958】命令类型
+        /// 【zdwen 2011-12-28-171958】命令类型
         /// </summary>
         public CommandType CommandType
         {
@@ -51,13 +51,13 @@ namespace Wx.Utils.SqlServer
         }
 
         /// <summary>
-        /// 【闻祖东 2012-1-31-154314】Input参数字典
+        /// 【zdwen 2012-1-31-154314】Input参数字典
         /// </summary>
         internal Dictionary<string, SqlParameter> DicInputParams { get; set; }
         internal Dictionary<string, SqlParameter> ReturnParams { get; set; }
         internal Dictionary<string, SqlParameter> OutputParams { get; set; }
 
-        protected QueryObject()
+        protected WxQueryObject()
         {
             CommandType = CommandType.Text;
             CmdTimeOut = 30;
@@ -69,8 +69,8 @@ namespace Wx.Utils.SqlServer
         }
 
         /// <summary>
-        /// 【闻祖东 2011-12-27-150815】执行的SQL的原始语句
-        /// 【闻祖东 2012-11-23-153111】当前已添加支持存储过程的原始执行语句输出。
+        /// 【zdwen 2011-12-27-150815】执行的SQL的原始语句
+        /// 【zdwen 2012-11-23-153111】当前已添加支持存储过程的原始执行语句输出。
         /// 只是当前Case不需要Output以及Return参数，故就未做实现。
         /// </summary>
         public string DraftSqlStatement
@@ -155,8 +155,8 @@ namespace Wx.Utils.SqlServer
         }
 
         /// <summary>
-        /// 【闻祖东 2012-2-2-163120】默认的添加参数的方法，添加输入参数（InputParam）
-        /// 【闻祖东 2012-3-26-151950】默认情况下，枚举会被转换成相应的名称字符串（注）。
+        /// 【zdwen 2012-2-2-163120】默认的添加参数的方法，添加输入参数（InputParam）
+        /// 【zdwen 2012-3-26-151950】默认情况下，枚举会被转换成相应的名称字符串（注）。
         /// 此方法引起的参数类型转换造成数据库的性能问题，此方法强制建议采用AddParam(string paramName, object paramValue, SqlDbType dbType)来替代。"
         /// </summary>
         /// <param name="paramName">参数名</param>

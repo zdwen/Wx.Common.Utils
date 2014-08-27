@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 namespace Wx.Common.Utils.Modles.Entities.BOs
 {
-    public class Crypter
+    public class WxCrypt
     {
         public Encoding Encoding { get; set; }
         /// <summary>
@@ -18,7 +18,7 @@ namespace Wx.Common.Utils.Modles.Entities.BOs
         /// </summary>
         public string Iv { get; set; }
 
-        public Crypter()
+        public WxCrypt()
         {
             Encoding = Encoding.UTF8;
             Key = "TestKeyTestKey97";

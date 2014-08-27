@@ -14,27 +14,27 @@ using Wx.Common.Utils.Modles.Entities.DTOs;
 
 namespace Wx.Utils.SqlServer
 {
-    public class QueryObjectCollection
+    public class WxQueryObjectCollection
     {
-        List<QueryObject> _QOs;
+        List<WxQueryObject> _QOs;
 
         /// <summary>
-        /// 【闻祖东 2013-3-5-162525】执行所耗费的时间(s)
+        /// 【zdwen 2013-3-5-162525】执行所耗费的时间(s)
         /// </summary>
         public double CostSecond { get; private set; }
 
         /// <summary>
-        /// 【闻祖东 2014-8-27-161654】批量执行的方式，默认为单线程执行。
+        /// 【zdwen 2014-8-27-161654】批量执行的方式，默认为单线程执行。
         /// </summary>
         public BatchType BatchType { get; set; }
         /// <summary>
-        /// 【闻祖东 2013-3-5-115339】每次批量执行的条数，默认值为100。
+        /// 【zdwen 2013-3-5-115339】每次批量执行的条数，默认值为100。
         /// </summary>
         public int BatchCount { get; set; }
 
-        public QueryObjectCollection()
+        public WxQueryObjectCollection()
         {
-            _QOs = new List<QueryObject>();
+            _QOs = new List<WxQueryObject>();
             BatchType = BatchType.SingleThread;
             CostSecond = 0;
             BatchCount = 100;
@@ -50,7 +50,7 @@ namespace Wx.Utils.SqlServer
             }
         }
 
-        public void Add(QueryObject queryObject)
+        public void Add(WxQueryObject queryObject)
         {
             _QOs.Add(queryObject);
         }
@@ -66,8 +66,8 @@ namespace Wx.Utils.SqlServer
                 case BatchType.MultiThread:
                     WxTaskCollection taskColl = new WxTaskCollection();
 
-                    foreach (List<QueryObject> listQOs in _QOs.xPartition(BatchCount))
-                        taskColl.AddTask(new WxAction<List<QueryObject>>(ExecuteBatches, listQOs));
+                    foreach (List<WxQueryObject> listQOs in _QOs.xPartition(BatchCount))
+                        taskColl.AddTask(new WxAction<List<WxQueryObject>>(ExecuteBatches, listQOs));
 
                     taskColl.Execute();
                     break;
@@ -81,9 +81,9 @@ namespace Wx.Utils.SqlServer
 
 
 
-        static void ExecuteBatches(List<QueryObject> queryObjects)
+        static void ExecuteBatches(List<WxQueryObject> queryObjects)
         {
-            foreach (QueryObject queryObject in queryObjects)
+            foreach (WxQueryObject queryObject in queryObjects)
                 queryObject.xExecuteNonQuery();
         }
     }

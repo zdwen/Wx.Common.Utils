@@ -35,6 +35,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SevenZipSharp">
+      <HintPath>..\..\lib\7zip\SevenZipSharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -45,8 +48,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Extentions\ExList.cs" />
-    <Compile Include="JsonHelper.cs" />
-    <Compile Include="Modles\Entities\BOs\Crypter.cs" />
+    <Compile Include="WxCompressor.cs" />
+    <Compile Include="WxJson.cs" />
+    <Compile Include="Modles\Entities\BOs\WxCrypt.cs" />
     <Compile Include="Modles\Entities\BOs\WxJsonConverter\EnumJsonConverter.cs" />
     <Compile Include="Modles\Entities\DTOs\DevidedList.cs" />
     <Compile Include="WxUtils.cs" />
@@ -55,7 +59,7 @@
     <Compile Include="Modles\Entities\BOs\MultiTasks\WxTask.cs" />
     <Compile Include="Modles\Entities\BOs\MultiTasks\WxTaskCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="XmlHelper.cs" />
+    <Compile Include="WxXml.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Modles\Enums\" />

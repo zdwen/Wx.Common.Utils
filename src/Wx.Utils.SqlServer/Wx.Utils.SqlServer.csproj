@@ -45,8 +45,8 @@
   <ItemGroup>
     <Compile Include="Enums\BatchType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QueryObject.cs" />
-    <Compile Include="QueryObjectCollection.cs" />
+    <Compile Include="WxQueryObject.cs" />
+    <Compile Include="WxQueryObjectCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Wx.Common.Utils\Wx.Common.Utils.csproj">
