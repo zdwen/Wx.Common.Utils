@@ -1,0 +1,11 @@
+obj
+bin
+*.user
+*.suo
+*.Cache
+_ReSharper*
+.gitconfig
+*.min.js
+*.min.css
+*.release.config
+output
