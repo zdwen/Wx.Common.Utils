@@ -29,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Wx.Utils.SqlServer.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BLToolkit.4">
