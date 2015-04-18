@@ -154,14 +154,20 @@ namespace Wx.Utils.SqlServer
             }
         }
 
+        public void AddParam(string paramName, object paramValue, SqlDbType? dbType = null)
+        {
+            AddParam(paramName, paramValue, false, dbType);
+        }
+
         /// <summary>
-        /// 【zdwen 2012-2-2-163120】默认的添加参数的方法，添加输入参数（InputParam）
-        /// 【zdwen 2012-3-26-151950】默认情况下，枚举会被转换成相应的名称字符串（注）。
-        /// 此方法引起的参数类型转换造成数据库的性能问题，此方法强制建议采用AddParam(string paramName, object paramValue, SqlDbType dbType)来替代。"
+        /// 【闻祖东 2015-04-18 143348】默认的添加参数的方法。为了避免数据库端的类型判断带来的性能问题，建议最好是提交dbType参数。
+        /// 【闻祖东 2015-04-18 143403】默认情况下，枚举值会按照Int类型进行插入。
         /// </summary>
         /// <param name="paramName">参数名</param>
         /// <param name="paramValue">参数值</param>
-        public void AddParam(string paramName, object paramValue, SqlDbType? dbType = null)
+        /// <param name="enumAsString">标识是否将枚举值作为String进行传输</param>
+        /// <param name="dbType">数据类型</param>
+        public void AddParam(string paramName, object paramValue, bool enumAsString = false, SqlDbType? dbType = null)
         {
             SqlParameter param = new SqlParameter()
             {
@@ -169,7 +175,7 @@ namespace Wx.Utils.SqlServer
                 Direction = ParameterDirection.Input,
                 SqlValue = paramValue == null
                     ? DBNull.Value
-                    : EnumAsString && paramValue.GetType().IsEnum
+                    : EnumAsString && paramValue.GetType().IsEnum && enumAsString
                         ? paramValue.ToString()
                         : paramValue,
             };
