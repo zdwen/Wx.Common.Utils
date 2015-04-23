@@ -54,8 +54,8 @@ namespace Wx.Utils.SqlServer
         /// 【zdwen 2012-1-31-154314】Input参数字典
         /// </summary>
         internal Dictionary<string, SqlParameter> DicInputParams { get; set; }
-        internal Dictionary<string, SqlParameter> ReturnParams { get; set; }
-        internal Dictionary<string, SqlParameter> OutputParams { get; set; }
+        public Dictionary<string, SqlParameter> ReturnParams { get; set; }
+        public Dictionary<string, SqlParameter> OutputParams { get; set; }
 
         protected WxQueryObject()
         {
@@ -199,7 +199,7 @@ namespace Wx.Utils.SqlServer
             ReturnParams[paramName] = param;
         }
 
-        public void AddOutputParam(string paramName, SqlDbType dbType, int size)
+        public void AddParamOutput(string paramName, SqlDbType dbType, int size)
         {
             SqlParameter param = new SqlParameter()
             {
@@ -212,7 +212,7 @@ namespace Wx.Utils.SqlServer
             OutputParams[paramName] = param;
         }
 
-        public void AddOutputParam(string paramName, SqlDbType dbType)
+        public void AddParamOutput(string paramName, SqlDbType dbType)
         {
             SqlParameter param = new SqlParameter()
             {
